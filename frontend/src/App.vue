@@ -9,6 +9,7 @@
       :filters="state.filters"
       @update-tasks="updateTasks"
       @apply-filters="applyFilters"
+      @add-task="addTask"
     />
   </app-layout>
 </template>
@@ -18,6 +19,7 @@ import { reactive, computed } from "vue";
 import { AppLayout } from "@/layouts";
 import { normalizeTask } from "@/common/helpers";
 import tasks from "./mocks/tasks.json";
+import users from "@/mocks/users.json";
 
 const state = reactive({
   tasks: tasks.map((task) => normalizeTask(task)),
@@ -30,7 +32,7 @@ const state = reactive({
 
 const filteredTasks = computed(() => {
   const filtersAreEmpty = Object.values(state.filters).every(
-    (value) => !value.length
+    (value) => !value.length,
   );
   if (filtersAreEmpty) {
     // вернуть все задачи, елси фильтры не применены
@@ -50,7 +52,7 @@ const filteredTasks = computed(() => {
   // Применить фильтр оп статусам
   const statusesFilter = (task) =>
     state.filters.statuses.some(
-      (el) => el === task.status || el === task.timeStatus
+      (el) => el === task.status || el === task.timeStatus,
     );
 
   // Обработать задачи в соответствии с фильтрами
@@ -62,7 +64,7 @@ const filteredTasks = computed(() => {
     };
 
     return Object.entries(result).every(
-      ([key, callback]) => !state.filters[key].length || callback(task)
+      ([key, callback]) => !state.filters[key].length || callback(task),
     );
   });
 });
@@ -89,6 +91,28 @@ function applyFilters({ item, entity }) {
     ~itemIndex ? resultValues.splice(itemIndex, 1) : resultValues.push(item);
     state.filters[entity] = resultValues;
   }
+}
+
+function getTaskUserById(id) {
+  return users.find((user) => user.id === id);
+}
+
+// СОздаем новую задачу и добавляем в массив задач
+function addTask(task) {
+  // Нормализуем задачу
+  const newTask = normalizeTask(task);
+  // Добавляем идентификатор, последний элемент в списке задач
+  // После подключения сервера, идентификатор будет присваиваться сервером
+  newTask.id = state.tasks.length + 1;
+  // Добавляем задачу в конец списка задач в бэклоге
+  newTask.sortOrder = state.tasks.filter((task) => !task.columnId).length;
+  // Если задаче присвоен испольнитель, то добавялем объект пользователя в задачу
+  // Это будет добавлено сервером позже
+  if (newTask.userId) {
+    newTask.user = { ...getTaskUserById(newTask.userId) };
+  }
+  // Добавляем задачу в массив задач
+  state.tasks = [...state.tasks, newTask];
 }
 </script>
 
