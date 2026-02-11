@@ -126,6 +126,7 @@
       <!--      Блок тегов-->
       <div class="task-card__block">
         <!--        Компонент создания тегов-->
+        <task-card-creator-tags :tags="task.tags" @set-tags="setTags" />
       </div>
 
       <!--      Блок сохранения и отмены изменений-->
@@ -155,6 +156,7 @@ import AppButton from "@/common/components/AppButton.vue";
 import TaskCardCreatorUserSelector from "@/common/modules/task/components/TaskCardCreatorUserSelector.vue";
 import TaskCardCreatorDueDateSelector from "@/common/modules/task/components/TaskCardCreatorDueDateSelector.vue";
 import TaskCardViewTicksList from "@/common/modules/task/components/TaskCardViewTicksList.vue";
+import TaskCardCreatorTags from "@/modules/tasks/components/TaskCardCreatorTags.vue";
 import { createUUIDv4, createNewDate } from "@/common/helpers";
 import { STATUSES } from "@/common/constants";
 import taskStatuses from "@/common/enums/taskStatuses";
@@ -226,7 +228,7 @@ const validations = ref(setEmptyValidations());
 
 function setStatus(status) {
   const [key] = Object.entries(taskStatuses).find(
-    ([_, value]) => value === status,
+    ([value]) => value === status,
   );
   const taskStatus = task.value.statusId;
 
@@ -302,6 +304,10 @@ watch(task, () => {
   validations.value = false;
   return;
 });
+
+function setTags(tags) {
+  task.value.tags = tags;
+}
 </script>
 
 <style lang="scss" scoped>
