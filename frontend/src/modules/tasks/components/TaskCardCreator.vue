@@ -153,9 +153,9 @@
 import { ref, onMounted, watch } from "vue";
 import { useRouter } from "vue-router";
 import AppButton from "@/common/components/AppButton.vue";
-import TaskCardCreatorUserSelector from "@/common/modules/task/components/TaskCardCreatorUserSelector.vue";
-import TaskCardCreatorDueDateSelector from "@/common/modules/task/components/TaskCardCreatorDueDateSelector.vue";
-import TaskCardViewTicksList from "@/common/modules/task/components/TaskCardViewTicksList.vue";
+import TaskCardCreatorUserSelector from "@/modules/tasks/components/TaskCardCreatorUserSelector.vue";
+import TaskCardCreatorDueDateSelector from "@/modules/tasks/components/TaskCardCreatorDueDateSelector.vue";
+import TaskCardViewTicksList from "@/modules/tasks/components/TaskCardViewTicksList.vue";
 import TaskCardCreatorTags from "@/modules/tasks/components/TaskCardCreatorTags.vue";
 import { createUUIDv4, createNewDate } from "@/common/helpers";
 import { STATUSES } from "@/common/constants";
@@ -208,7 +208,7 @@ const taskToWork = props.taskToEdit
   : createNewTask();
 
 const task = ref(taskToWork);
-const emits = defineEmits[("addTask", "editTask", "deleteTask")];
+const emits = defineEmits(["addTask", "editTask", "deleteTask"]);
 
 function deleteTask() {
   emits("deleteTask", task.value.id);
@@ -218,17 +218,16 @@ function deleteTask() {
 const setEmptyValidations = () => ({
   title: {
     error: "",
-    rules: "required",
+    rules: ["required"],
   },
-  url: "",
-  rules: ["url"],
+  url: { error: "", rules: ["url"] },
 });
 
 const validations = ref(setEmptyValidations());
 
 function setStatus(status) {
   const [key] = Object.entries(taskStatuses).find(
-    ([value]) => value === status,
+    ([_, value]) => value === status,
   );
   const taskStatus = task.value.statusId;
 
@@ -253,7 +252,7 @@ function createTick() {
 
 // Используем uuid для новых задач, id для существующих
 function updateTick(tick) {
-  const index = task.value.ticks.findeIndex(({ uuid, id }) => {
+  const index = task.value.ticks.findIndex(({ uuid, id }) => {
     if (uuid) {
       return tick.uuid === uuid;
     }
@@ -272,11 +271,11 @@ function updateTick(tick) {
 
 function removeTick({ uuid, id }) {
   if (uuid) {
-    task.value.ticks = task.value.tick.filter((tick) => tick.uuid !== uuid);
+    task.value.ticks = task.value.ticks.filter((tick) => tick.uuid !== uuid);
   }
 
   if (id) {
-    task.value.ticks = task.value.tick.filter((tick) => tick.id !== id);
+    task.value.ticks = task.value.ticks.filter((tick) => tick.id !== id);
   }
 }
 

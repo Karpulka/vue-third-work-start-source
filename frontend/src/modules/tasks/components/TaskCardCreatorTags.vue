@@ -23,7 +23,7 @@ defineProps({
 
 const emits = defineEmits(["setTags"]);
 
-const showAnalyzer = ref(false);
+const showAnalyzer = ref(true);
 const timeout = ref(null);
 
 function setTags(tags, refresh) {

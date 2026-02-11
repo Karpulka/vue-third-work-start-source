@@ -5,7 +5,7 @@
 <script setup>
 import { h, ref, watch } from "vue";
 import { uniq } from "lodash";
-import { TAG_SEPARATOR, KEY_CODE_ENTER } from "@/common/contants";
+import { TAG_SEPARATOR, KEY_CODE_ENTER } from "@/common/constants";
 import { getTagsArrayFromString } from "@/common/helpers";
 
 const props = defineProps({
